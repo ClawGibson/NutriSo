@@ -1,0 +1,7 @@
+language: es
+code_review:
+  auto_review: false
+  trigger_comment: "/q review"
+feature_development:
+  auto_dev: false
+  trigger_comment: "/q dev"
