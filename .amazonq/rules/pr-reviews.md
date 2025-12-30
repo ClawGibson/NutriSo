@@ -1,92 +1,27 @@
-### Enfoque General
-Al revisar Pull Requests, enfócate en:
-- Código limpio y mantenible
-- Mejores prácticas de React
-- Rendimiento y optimización
-- Accesibilidad web
+# Guía de Revisión React para Amazon Q Developer
 
-## Buenas Prácticas React
-### Componentes
-- **Nombres descriptivos**: Verifica que los componentes usen PascalCase y nombres claros
-- **Componentes pequeños**: Sugiere dividir componentes grandes (>200 líneas)
-- **Props tipadas**: Asegúrate que las props tengan tipos definidos (TypeScript o PropTypes)
-- **Destructuring**: Prefiere destructuring de props en la firma del componente
+## Prioridad 1: Crítico ⛔
+- **Seguridad**: Sin API keys hardcoded, validar inputs, no usar `dangerouslySetInnerHTML` sin sanitización
+- **Bugs evidentes**: Lógica incorrecta, estados inconsistentes, memory leaks
+- **Hooks**:  Cumplir reglas de hooks, dependencias correctas en `useEffect`, cleanup cuando sea necesario
 
-### Hooks
-- **Reglas de Hooks**: Verifica que los hooks se usen solo en el nivel superior
-- **useEffect limpio**:
-  - Revisa que useEffect tenga dependencias correctas
-  - Verifica cleanup functions cuando sea necesario
-  - Alerta si el array de dependencias está vacío sin justificación
-- **useMemo/useCallback**: Sugiere solo cuando hay cálculos costosos o prevención de re-renders innecesarios
-- **Custom Hooks**: Recomienda extraer lógica compleja a hooks personalizados
+## Prioridad 2: Importante ⚠️
+- **Componentes**: Props tipadas (TypeScript/PropTypes), nombres en PascalCase, máximo 200 líneas
+- **Estado**: Actualizaciones inmutables, evitar prop drilling >3 niveles
+- **Rendimiento**: Lazy loading para rutas, no importaciones innecesarias grandes
+- **Accesibilidad**:  Atributos ARIA, semántica HTML correcta
 
-### Estado
-- **useState**: Verifica inicialización correcta y actualizaciones inmutables
-- **Evitar prop drilling**: Sugiere Context API o state management si hay más de 3 niveles
-- **Estado derivado**: Recomienda calcular en render en lugar de duplicar en estado
+## Prioridad 3: Sugerencias 💡
+- **Código limpio**: DRY, funciones <30 líneas, nombres descriptivos (camelCase)
+- **Optimizaciones**: `React.memo`/`useMemo`/`useCallback` solo si hay re-renders evidentes
+- **Custom hooks**: Extraer lógica compleja reutilizable
 
-## Estilos y UI
-- **CSS Modules o styled-components**: Verifica uso consistente
-- **No inline styles**: Desaconsejar estilos inline excepto para valores dinámicos
+## Qué NO revisar
+- Preferencias de estilo personal si el código funciona
+- Código legacy si el cambio es menor
+- Tests para cambios triviales (typos, CSS)
 
-## Rendimiento
-- **Lazy loading**: Sugiere React.lazy() para rutas o componentes pesados
-- **Memoización**: Solo recomendar React.memo cuando hay re-renders evidentes
-- **Imágenes**: Verifica optimización (lazy loading, formatos modernos)
-- **Bundle size**: Alerta sobre importaciones grandes innecesarias
-
-## Accesibilidad
-- **Atributos ARIA**: Verifica labels, roles y descripciones
-- **Contraste**: Menciona si hay problemas evidentes de contraste
-- **Navegación por teclado**: Revisa que elementos interactivos sean accesibles
-- **Alt text**: Todas las imágenes deben tener texto alternativo descriptivo
-
-## Código Limpio
-### Nombrado
-- **Variables**: camelCase, nombres descriptivos
-- **Constantes**: UPPER_SNAKE_CASE para valores inmutables globales
-- **Funciones**: Verbos que describan la acción (handleClick, fetchData, isValid)
-
-### Estructura
-- **DRY**: Señala código duplicado
-- **Funciones pequeñas**: Máximo 20-30 líneas idealmente
-- **Comentarios**: Solo cuando el "por qué" no es obvio del código
-
-### Imports
-- **Orden**: React primero, luego librerías externas, luego archivos locales
-- **Imports no usados**: Señala y sugiere eliminar
-- **Barrel exports**: Recomienda index.js para exportaciones limpias
-
-## Seguridad
-- **Sanitización**: Verifica inputs del usuario
-- **dangerouslySetInnerHTML**: Alerta sobre su uso sin sanitización
-- **API keys**: No deben estar en el código (usar variables de entorno)
-- **Dependencias**: Menciona si hay actualizaciones de seguridad pendientes
-
-## Gestión de Dependencias
-- **package.json**: Verifica que nuevas dependencias estén justificadas
-- **Versiones**: Prefiere versiones específicas sobre rangos amplios
-- **Tree shaking**: Usa imports nombrados cuando sea posible
-
-## Qué NO hacer
-- No sugerir cambios de estilo personal si el código es funcional
-- No pedir refactors masivos sin justificación clara de mejora
-- No exigir tests para cambios triviales (typos, estilos menores)
-- No ser demasiado estricto con código legacy si el cambio es pequeño
-
-## Prioridades
-### Crítico (debe cambiarse)
-- Bugs evidentes
-- Problemas de seguridad
-- Violaciones graves de rendimiento
-
-### Importante (debería cambiarse)
-- Violaciones de accesibilidad
-- Código difícil de mantener
-- Falta de manejo de errores
-
-### Nice to have (sugerencias)
-- Optimizaciones menores
-- Mejoras de estilo
-- Refactors opcionales
+## Notas
+- Destructuring de props preferido
+- CSS Modules/styled-components sobre inline styles
+- Estado derivado:  calcular en render, no duplicar en state
