@@ -6,7 +6,6 @@ Al revisar Pull Requests, enfócate en:
 - Accesibilidad web
 
 ## Buenas Prácticas React
-
 ### Componentes
 - **Nombres descriptivos**: Verifica que los componentes usen PascalCase y nombres claros
 - **Componentes pequeños**: Sugiere dividir componentes grandes (>200 líneas)
@@ -29,8 +28,6 @@ Al revisar Pull Requests, enfócate en:
 
 ## Estilos y UI
 - **CSS Modules o styled-components**: Verifica uso consistente
-- **Nombres de clases**: Deben ser descriptivos y seguir BEM si se usa CSS tradicional
-- **Responsive**: Revisa que se consideren diferentes tamaños de pantalla
 - **No inline styles**: Desaconsejar estilos inline excepto para valores dinámicos
 
 ## Rendimiento
@@ -44,11 +41,6 @@ Al revisar Pull Requests, enfócate en:
 - **Contraste**: Menciona si hay problemas evidentes de contraste
 - **Navegación por teclado**: Revisa que elementos interactivos sean accesibles
 - **Alt text**: Todas las imágenes deben tener texto alternativo descriptivo
-
-## Testing
-- **Tests incluidos**: Sugiere agregar tests para lógica nueva compleja
-- **Nombres descriptivos**: Los tests deben explicar qué verifican
-- **Testing Library**: Preferir queries por rol/label sobre testId
 
 ## Código Limpio
 ### Nombrado
