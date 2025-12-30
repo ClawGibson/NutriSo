@@ -4,7 +4,7 @@ Todas las revisiones, comentarios y sugerencias deben redactarse en **español**
 
 ## Proyecto React Web - Guía de Revisión
 
-### 🎯 Enfoque General
+### Enfoque General
 
 Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
@@ -15,7 +15,7 @@ Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
 ---
 
-## ✅ Buenas Prácticas React
+## Buenas Prácticas React
 
 ### Componentes
 
@@ -42,7 +42,7 @@ Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
 ---
 
-## 🎨 Estilos y UI
+## Estilos y UI
 
 - **CSS Modules o styled-components**: Verifica uso consistente
 - **Nombres de clases**: Deben ser descriptivos y seguir BEM si se usa CSS tradicional
@@ -51,7 +51,7 @@ Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
 ---
 
-## 🚀 Rendimiento
+## Rendimiento
 
 - **Lazy loading**: Sugiere React.lazy() para rutas o componentes pesados
 - **Memoización**: Solo recomendar React.memo cuando hay re-renders evidentes
@@ -69,7 +69,7 @@ Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
 ---
 
-## 🧪 Testing
+## Testing
 
 - **Tests incluidos**: Sugiere agregar tests para lógica nueva compleja
 - **Nombres descriptivos**: Los tests deben explicar qué verifican
@@ -77,7 +77,7 @@ Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
 ---
 
-## 📝 Código Limpio
+## Código Limpio
 
 ### Nombrado
 
@@ -99,7 +99,7 @@ Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
 ---
 
-## 🔒 Seguridad
+## Seguridad
 
 - **Sanitización**: Verifica inputs del usuario
 - **dangerouslySetInnerHTML**: Alerta sobre su uso sin sanitización
@@ -108,7 +108,7 @@ Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
 ---
 
-## 📦 Gestión de Dependencias
+## Gestión de Dependencias
 
 - **package.json**: Verifica que nuevas dependencias estén justificadas
 - **Versiones**: Prefiere versiones específicas sobre rangos amplios
@@ -116,7 +116,7 @@ Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
 ---
 
-## 🔄 Git y PRs
+## Git y PRs
 
 - **Commits atómicos**: Cada commit debe tener un propósito claro
 - **Mensajes**: Deben ser descriptivos y en presente ("Add feature" no "Added feature")
@@ -124,7 +124,7 @@ Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
 ---
 
-## ❌ Qué NO hacer
+## Qué NO hacer
 
 - No sugerir cambios de estilo personal si el código es funcional
 - No pedir refactors masivos sin justificación clara de mejora
@@ -133,7 +133,7 @@ Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
 ---
 
-## 💬 Tono de Revisión
+## Tono de Revisión
 
 - **Constructivo**: Explica el "por qué" detrás de cada sugerencia
 - **Positivo**: Reconoce código bien escrito
@@ -142,7 +142,7 @@ Este es un proyecto React web. Al revisar Pull Requests, enfócate en:
 
 ---
 
-## 🎯 Prioridades
+## Prioridades
 
 ### Crítico (debe cambiarse)
 
