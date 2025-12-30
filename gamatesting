@@ -1,1 +1,51 @@
-Agregando archivo para probar el pull request con copilot automatico
+# Pull Request Description
+
+## Summary
+
+Add a minimal test file to validate Copilot automatic pull request review and CodeQL rules integration. This change is limited to repository metadata/testing and does not affect application runtime behavior.
+
+## Type of change
+
+- [x] Chore / tooling
+- [ ] Feature
+- [ ] Bug fix
+- [ ] Documentation update
+- [ ] Refactor
+- [ ] Other (describe below)
+
+## Description
+
+This PR introduces the `gamatesting` file used to verify that:
+
+- Copilot Code Review is triggered correctly.
+- The PR description template is fully populated and passes CodeQL checks.
+- Static analysis rules related to PR hygiene can be tested without impacting production code.
+
+No functional code has been added, removed, or modified; this is purely a repository-level testing artifact.
+
+## How has this been tested?
+
+- [x] Not applicable – no executable code changed.
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] Manual QA (describe steps below)
+
+**Notes on testing:**
+- Verified that the repository can be checked out and built as before.
+- Confirmed that adding this file does not impact existing build or test pipelines.
+
+## Related issues / tickets
+
+- N/A (internal test PR for Copilot and CodeQL configuration)
+
+## Checklist
+
+- [x] PR description completed and all relevant sections filled in.
+- [x] Scope of change is clearly documented.
+- [x] Testing impact is documented (including “not applicable” where relevant).
+- [x] No secrets, credentials, or sensitive data introduced.
+- [x] Change does not introduce or modify production logic.
+
+## Additional context
+
+This PR exists solely to validate automated review tooling behavior. It can be safely closed or removed once the configuration has been verified.
