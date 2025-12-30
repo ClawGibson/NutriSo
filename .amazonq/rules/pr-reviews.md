@@ -77,22 +77,11 @@ Al revisar Pull Requests, enfócate en:
 - **Versiones**: Prefiere versiones específicas sobre rangos amplios
 - **Tree shaking**: Usa imports nombrados cuando sea posible
 
-## Git y PRs
-- **Commits atómicos**: Cada commit debe tener un propósito claro
-- **Mensajes**: Deben ser descriptivos y en presente ("Add feature" no "Added feature")
-- **Archivos grandes**: Alerta sobre commits de archivos binarios o muy grandes
-
 ## Qué NO hacer
 - No sugerir cambios de estilo personal si el código es funcional
 - No pedir refactors masivos sin justificación clara de mejora
 - No exigir tests para cambios triviales (typos, estilos menores)
 - No ser demasiado estricto con código legacy si el cambio es pequeño
-
-## Tono de Revisión
-- **Constructivo**: Explica el "por qué" detrás de cada sugerencia
-- **Positivo**: Reconoce código bien escrito
-- **Educativo**: Incluye enlaces a documentación cuando sea relevante
-- **Pragmático**: Balancea perfección con velocidad de desarrollo
 
 ## Prioridades
 ### Crítico (debe cambiarse)
