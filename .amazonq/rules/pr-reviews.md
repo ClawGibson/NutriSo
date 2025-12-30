@@ -1,27 +1,45 @@
-# Guía de Revisión React para Amazon Q Developer
+All React components must use PascalCase naming convention. 
 
-## Prioridad 1: Crítico ⛔
-- **Seguridad**: Sin API keys hardcoded, validar inputs, no usar `dangerouslySetInnerHTML` sin sanitización
-- **Bugs evidentes**: Lógica incorrecta, estados inconsistentes, memory leaks
-- **Hooks**:  Cumplir reglas de hooks, dependencias correctas en `useEffect`, cleanup cuando sea necesario
+All component props must have TypeScript types or PropTypes defined.
 
-## Prioridad 2: Importante ⚠️
-- **Componentes**: Props tipadas (TypeScript/PropTypes), nombres en PascalCase, máximo 200 líneas
-- **Estado**: Actualizaciones inmutables, evitar prop drilling >3 niveles
-- **Rendimiento**: Lazy loading para rutas, no importaciones innecesarias grandes
-- **Accesibilidad**:  Atributos ARIA, semántica HTML correcta
+All React components must be under 200 lines of code.
 
-## Prioridad 3: Sugerencias 💡
-- **Código limpio**: DRY, funciones <30 líneas, nombres descriptivos (camelCase)
-- **Optimizaciones**: `React.memo`/`useMemo`/`useCallback` solo si hay re-renders evidentes
-- **Custom hooks**: Extraer lógica compleja reutilizable
+All props must be destructured in component function signature.
 
-## Qué NO revisar
-- Preferencias de estilo personal si el código funciona
-- Código legacy si el cambio es menor
-- Tests para cambios triviales (typos, CSS)
+All React hooks must be called at the top level of components, never inside conditions or loops.
 
-## Notas
-- Destructuring de props preferido
-- CSS Modules/styled-components sobre inline styles
-- Estado derivado:  calcular en render, no duplicar en state
+All useEffect hooks must include correct dependency arrays.
+
+All useEffect hooks with subscriptions or timers must include cleanup functions.
+
+All state updates must be immutable and not mutate existing state directly.
+
+All API keys and secrets must use environment variables, never hardcoded strings.
+
+All user inputs must be validated and sanitized before use.
+
+All dangerouslySetInnerHTML usage must sanitize HTML content first.
+
+All components exceeding 3 levels of prop drilling must use Context API or state management.
+
+All images must implement lazy loading when appropriate.
+
+All route components must use React. lazy() for code splitting.
+
+All event handler functions must use descriptive names starting with "handle" (handleClick, handleSubmit).
+
+All boolean check functions must use descriptive names starting with "is" or "has" (isValid, hasPermission).
+
+All custom hooks must start with "use" prefix. 
+
+All interactive elements must have proper ARIA attributes for accessibility.
+
+All form inputs must have associated labels for accessibility.
+
+All repeated code blocks must be extracted into reusable functions or components.
+
+All functions must be under 30 lines when possible.
+
+All CSS styling must use CSS Modules or styled-components, not inline styles except for dynamic values.
+
+All global immutable constants must use UPPER_SNAKE_CASE naming. 
