@@ -1,4 +1,4 @@
-> Todas las revisiones, comentarios y sugerencias deben redactarse en **español**.
+Todas las revisiones, comentarios y sugerencias deben redactarse en **español**.
 
 # Instrucciones de Revisión para Amazon Q
 
