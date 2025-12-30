@@ -1,5 +1,3 @@
-Todas las revisiones, comentarios y sugerencias deben redactarse en **español**.
-
 ### Enfoque General
 Al revisar Pull Requests, enfócate en:
 - Código limpio y mantenible
