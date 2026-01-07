@@ -1,3 +1,11 @@
+---
+name: "Feature Template"
+about: "Usa esta plantilla para nuevas funcionalidades"
+title: "[Feature] "
+labels: ["feature"]
+assignees: []
+---
+
 ## 📝 Descripción
 
 Se realizó la integración de la [XX-XXXX](https://aeromexico.atlassian.net/browse/XX-XXXX).
