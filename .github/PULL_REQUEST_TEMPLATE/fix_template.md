@@ -1,3 +1,11 @@
+---
+name: "Fix Template"
+about: "Usa esta plantilla para correcciones de bugs"
+title: "[Fix] "
+labels: ["bugfix"]
+assignees: []
+---
+
 ## 📝 Descripción
 
 Se realizó la corrección de la [XX-XXXX](https://aeromexico.atlassian.net/browse/XX-XXXX).
