@@ -236,8 +236,23 @@ jobs:
         env:
           KIRO_API_KEY: ${{ secrets.KIRO_API_KEY }}
         run: |
-          kiro-cli chat --no-interactive --trust-tools=read,grep \
-            "$(cat review_prompt.txt)" > review_output.txt 2>&1 || true
+          # Pipe del prompt via stdin — evita límites de longitud de argumento
+          # y problemas con caracteres especiales en el shell
+          cat review_prompt.txt | kiro-cli chat --no-interactive --trust-tools=read,grep \
+            2>&1 > review_output_raw.txt || true
+
+          # Strip de ANSI escape codes (colores de terminal que Kiro imprime)
+          sed 's/\x1b\[[0-9;]*[mGKHF]//g; s/◆\[[0-9;]*[mGKHF]//g' \
+            review_output_raw.txt > review_output.txt
+
+          # Filtrar líneas de warnings internos de Kiro (no son parte del review)
+          grep -v "Both .kiro and .amazonq folders" review_output.txt \
+            | grep -v "Failed to retrieve MCP settings" \
+            | grep -v "Try running kiro-cli" \
+            | grep -v "^• Credits:" \
+            | grep -v "^◆" \
+            > review_clean.txt || true
+          mv review_clean.txt review_output.txt
 
           if [ ! -s review_output.txt ]; then
             echo "✅ APROBADO — No se encontraron hallazgos." > review_output.txt
