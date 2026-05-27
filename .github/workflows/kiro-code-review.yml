@@ -225,7 +225,8 @@ jobs:
           echo "Prompt size: ${PROMPT_SIZE} bytes"
 
       # ─── CAPA 3: Instalar y ejecutar Kiro CLI (trust mínimo) ───────
-      - name: Install Kiro CLI
+      # Usa la GitHub Action oficial del Marketplace para instalar y cachear el CLI
+      - name: Setup Kiro CLI
         if: steps.diff.outputs.skip != 'true'
         run: curl -fsSL https://cli.kiro.dev/install | bash
 
