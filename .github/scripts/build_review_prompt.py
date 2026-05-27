@@ -2,14 +2,19 @@
 """
 Construye el prompt de code review para Kiro CLI.
 Escribe el resultado en review_prompt.txt.
-Uso: python3 build_review_prompt.py <diff_file> <max_bytes> [skills_dir]
+Uso: python3 build_review_prompt.py <diff_file> <max_bytes> [skills_dir] [head_ref] [base_ref] [author]
 """
 import os
 import sys
+from datetime import datetime, timezone
 
-diff_file = sys.argv[1] if len(sys.argv) > 1 else "full_diff.patch"
-max_bytes = int(sys.argv[2]) if len(sys.argv) > 2 else 102400
+diff_file  = sys.argv[1] if len(sys.argv) > 1 else "full_diff.patch"
+max_bytes  = int(sys.argv[2]) if len(sys.argv) > 2 else 102400
 skills_dir = sys.argv[3] if len(sys.argv) > 3 else ".kiro/skills/code-review"
+head_ref   = sys.argv[4] if len(sys.argv) > 4 else "feature"
+base_ref   = sys.argv[5] if len(sys.argv) > 5 else "main"
+author     = sys.argv[6] if len(sys.argv) > 6 else "unknown"
+fecha      = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 # ── Sistema de instrucciones ──────────────────────────────────────────────────
 system = """\
@@ -90,7 +95,7 @@ if os.path.exists(rules_path):
         system += rules[start:end][:2000]
 
 # ── Formato de output — alineado con pr-review.md Paso 4 ─────────────────────
-system += """
+system += f"""
 ## Formato de Output — SEGUIR EXACTAMENTE
 
 Genera el reporte con estas secciones. Usa triple backtick para bloques de código.
@@ -99,6 +104,7 @@ Genera el reporte con estas secciones. Usa triple backtick para bloques de códi
 
 # Code Review — [título del PR en una oración]
 
+**Rama:** {head_ref} → {base_ref} | **Autor:** {author} | **Fecha:** {fecha}
 **Archivos:** N | **Líneas:** +X -Y
 
 ---
@@ -108,6 +114,7 @@ Genera el reporte con estas secciones. Usa triple backtick para bloques de códi
 ---
 
 ## 🔴 Crítico (N)
+<!-- Bugs, seguridad, violaciones de arquitectura, bloqueadores → bloquean merge -->
 
 ### `ruta/archivo.ext:Línea` — [Categoría: Seguridad | Bug | Arquitectura | etc.]
 **Problema:** descripción clara.
@@ -124,6 +131,7 @@ Genera el reporte con estas secciones. Usa triple backtick para bloques de códi
 ---
 
 ## 🟡 Importante (N)
+<!-- Accesibilidad, mantenibilidad, SOLID, lógica sin migrar -->
 
 ### `ruta/archivo.ext:Línea` — [Categoría]
 **Problema:** descripción.
@@ -135,6 +143,7 @@ Genera el reporte con estas secciones. Usa triple backtick para bloques de códi
 ---
 
 ## 🟢 Sugerencias (N)
+<!-- Optimizaciones menores, mejoras de estilo opcionales -->
 
 - `archivo.ext:LN` — descripción breve.
 
@@ -179,7 +188,7 @@ if os.path.exists(diff_file):
     original_size = os.path.getsize(diff_file)
     truncated = original_size > max_bytes
 else:
-    diff_content = b"[No se encontró el archivo de diff]"
+    diff_content = "[No se encontró el archivo de diff]".encode("utf-8")
     truncated = False
     original_size = 0
 
