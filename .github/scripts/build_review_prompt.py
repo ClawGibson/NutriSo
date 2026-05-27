@@ -196,9 +196,18 @@ else:
 with open("review_prompt.txt", "w", encoding="utf-8") as f:
     f.write(system)
     f.write(diff_content.decode("utf-8", errors="replace"))
-    if truncated:
-        f.write(f"\n\n[DIFF TRUNCADO: {original_size} bytes → {max_bytes} bytes]\n")
+    # Cerrar el bloque del diff ANTES de la nota de truncado
     f.write("\n</UNTRUSTED_CODE_DIFF>\n")
+    # La nota va fuera del diff — el modelo la trata como instrucción
+    if truncated:
+        f.write(f"""
+<TRUNCATION_NOTICE>
+El diff fue truncado a {max_bytes // 1024}KB de un total de {original_size // 1024}KB ({original_size} bytes).
+Solo se revisó aproximadamente el {int(max_bytes * 100 / original_size)}% del PR.
+INSTRUCCIÓN: Al inicio del reporte, después del veredicto, agrega esta nota:
+> ⚠️ **Revisión parcial** — El diff fue truncado a {max_bytes // 1024}KB de {original_size // 1024}KB totales (~{int(max_bytes * 100 / original_size)}% revisado). Los hallazgos aplican solo al código analizado.
+</TRUNCATION_NOTICE>
+""")
 
 prompt_size = os.path.getsize("review_prompt.txt")
 print(f"Prompt escrito: {prompt_size} bytes")
