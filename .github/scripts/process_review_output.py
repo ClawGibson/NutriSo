@@ -174,6 +174,9 @@ cleaned = re.sub(r'\n{3,}', '\n\n', '\n'.join(result))
 # ── 5. Trim de líneas vacías al inicio y al final ────────────────────────────
 cleaned = cleaned.strip()
 
+# ── 6. Corregir títulos con blockquote: "> # Título" → "# Título" ────────────
+cleaned = re.sub(r'^>\s*(#{1,6}\s)', r'\1', cleaned, flags=re.MULTILINE)
+
 with open(output_file, "w", encoding="utf-8") as f:
     f.write(cleaned)
 
