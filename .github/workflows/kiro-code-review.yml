@@ -161,24 +161,70 @@ jobs:
 
           ## Formato de Output
 
-          Responde SOLO con hallazgos en este formato (modo conciso):
+          Genera un reporte de code review en markdown con estas secciones EXACTAS.
+          Responde en español.
 
-          <archivo>:L<línea>: <severidad> <problema>. <fix>.
+          ---
 
-          Prefijos de severidad:
-          - 🔴 bug: — comportamiento roto, seguridad, memory leak, bloqueador
-          - 🟡 risk: — funciona pero frágil, violación importante
-          - 🔵 nit: — estilo, naming, micro-optimización
-          - ❓ q: — pregunta genuina al autor
+          ### 📊 Resumen Ejecutivo
+
+          **[Título descriptivo del PR en una oración]**
+
+          | Métrica | Valor |
+          |---------|-------|
+          | Archivos revisados | N |
+          | Issues críticos 🔴 | N |
+          | Issues importantes 🟡 | N |
+          | Sugerencias 🟢 | N |
+
+          **Veredicto:** ✅ APROBADO | ⚠️ APROBADO CON OBSERVACIONES | ❌ REQUIERE CAMBIOS
+
+          ---
+
+          ### 🔴 Crítico — debe corregirse antes del merge  *(omitir sección si N=0)*
+
+          #### `ruta/archivo.ext` · Línea N
+          **Problema:** descripción clara del bug o violación.
+          **Por qué:** impacto concreto (crash, fuga de datos, comportamiento incorrecto).
+          **Fix:**
+          ```language
+          // código corregido
+          ```
+
+          ---
+
+          ### 🟡 Importante — debería corregirse  *(omitir sección si N=0)*
+
+          #### `ruta/archivo.ext` · Línea N
+          **Problema:** descripción.
+          **Fix sugerido:** descripción o snippet corto.
+
+          ---
+
+          ### 🟢 Sugerencias — nice-to-have  *(omitir sección si N=0)*
+
+          - `archivo.ext:LN` — descripción breve del nit o pregunta.
+
+          ---
+
+          ### ✅ Aspectos Positivos  *(siempre incluir al menos uno si existe)*
+
+          - Lo que está bien implementado.
+
+          ---
+
+          ### 📋 Recomendaciones
+
+          Mejoras futuras que no bloquean este PR.
+
+          ---
 
           Reglas estrictas:
-          - Sin introducción ni cierre
-          - Sin repetir lo que hace la línea
-          - Solo comentar errores/violaciones — NO describir código correcto
-          - NO felicitar ni dar feedback positivo
-          - Última línea: veredicto → ✅ APROBADO | ⚠️ APROBADO CON OBSERVACIONES | ❌ REQUIERE CAMBIOS
-
-          Si el código cumple todas las reglas → responder SOLO: ✅ APROBADO
+          - Solo reportar problemas reales — NO describir código correcto ni repetir lo que hace el código
+          - NO felicitar genéricamente ni agregar frases de relleno
+          - Si no hay issues de ningún tipo → responder SOLO:
+            ✅ **APROBADO** — El código cumple todos los estándares revisados.
+          - El veredicto final siempre en la última línea del resumen ejecutivo
 
           </SYSTEM_INSTRUCTIONS>
 
@@ -312,21 +358,18 @@ jobs:
             }
 
             if (!review || review.length < 5) {
-              review = '✅ APROBADO — No se encontraron hallazgos.';
+              review = '✅ **APROBADO** — No se encontraron hallazgos.';
             }
 
             const fileCount = '${{ steps.diff.outputs.file_count }}';
             const tampered = '${{ steps.validate.outputs.tampered }}';
 
             const securityNote = tampered === 'true'
-              ? '\n\n> ⚠️ **Nota:** Se detectó posible inconsistencia en el output. Revisar manualmente.'
+              ? '\n\n> ⚠️ **Nota de seguridad:** Se detectó posible inconsistencia en el output. Revisar manualmente.'
               : '';
 
             const body = [
               '## 🤖 Kiro AI Code Review (Advisory)',
-              '',
-              `**Archivos revisados:** ${fileCount}`,
-              `**Stack:** React 17 + Vite + Redux`,
               '',
               '> ℹ️ Este review es **informativo**. Los reviewers humanos son la autoridad final para aprobar/rechazar.',
               '',
