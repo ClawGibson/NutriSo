@@ -164,6 +164,12 @@ jobs:
           Genera un reporte de code review en markdown con estas secciones EXACTAS.
           Responde en español.
 
+          IMPORTANTE para bloques de código: usa SIEMPRE triple tilde (~~~) como delimitador,
+          NO triple backtick. Ejemplo:
+          ~~~jsx
+          const x = 1;
+          ~~~
+
           ---
 
           ### 📊 Resumen Ejecutivo
@@ -187,9 +193,9 @@ jobs:
           **Problema:** descripción clara del bug o violación.
           **Por qué:** impacto concreto (crash, fuga de datos, comportamiento incorrecto).
           **Fix:**
-          ```language
+          ~~~language
           // código corregido
-          ```
+          ~~~
 
           ---
 
@@ -198,6 +204,9 @@ jobs:
           #### `ruta/archivo.ext` · Línea N
           **Problema:** descripción.
           **Fix sugerido:** descripción o snippet corto.
+          ~~~language
+          // snippet si aplica
+          ~~~
 
           ---
 
@@ -229,6 +238,12 @@ jobs:
           </SYSTEM_INSTRUCTIONS>
 
           FORMAT_RULES
+
+          # ── Convertir ~~~ a ``` en el prompt final (bash-safe) ─────
+          # Los backticks en heredoc son interpretados por bash como command substitution.
+          # El modelo escribe ~~~ y aquí los convertimos a ``` antes de enviar.
+          # Esto garantiza que el output del modelo ya tenga ``` correctos.
+          sed -i 's/~~~/```/g' review_prompt.txt
 
           # ── CAPA 2: Delimitador de contenido no confiable ──────────
           cat >> review_prompt.txt << 'SECURITY_DELIMITER'
