@@ -44,12 +44,16 @@ jobs:
           git fetch origin ${{ github.event.pull_request.base.ref }}
           git diff origin/${{ github.event.pull_request.base.ref }}...HEAD --name-only > changed_files.txt
           git diff origin/${{ github.event.pull_request.base.ref }}...HEAD > full_diff.patch
+
           FILE_COUNT=$(wc -l < changed_files.txt | tr -d ' ')
           echo "file_count=${FILE_COUNT}" >> $GITHUB_OUTPUT
+
           MAX_FILES="${{ vars.KIRO_REVIEW_MAX_FILES }}"
           MAX_FILES="${MAX_FILES:-100}"
+
           if [ "$FILE_COUNT" -gt "$MAX_FILES" ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
+            echo "⚠️ PR con ${FILE_COUNT} archivos — excede límite (${MAX_FILES})"
           else
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
@@ -59,6 +63,7 @@ jobs:
         run: |
           MAX_SIZE="${{ vars.KIRO_REVIEW_DIFF_MAX_SIZE }}"
           MAX_SIZE="${MAX_SIZE:-100KB}"
+
           UNIT=$(echo "$MAX_SIZE" | sed 's/[0-9]//g')
           VALUE=$(echo "$MAX_SIZE" | sed 's/[^0-9]//g')
           case "$UNIT" in
@@ -66,6 +71,7 @@ jobs:
             MB|mb) BYTES=$((VALUE * 1048576)) ;;
             *)     BYTES=$((VALUE * 1024)) ;;
           esac
+
           python3 nutrisosapp/.github/scripts/build_review_prompt.py \
             full_diff.patch "$BYTES" "nutrisosapp/.kiro/skills/code-review" \
             "${{ github.head_ref }}" \
@@ -78,15 +84,45 @@ jobs:
 
       - name: Run AI Code Review
         if: steps.diff.outputs.skip != 'true'
+        id: review
         env:
           KIRO_API_KEY: ${{ secrets.KIRO_API_KEY }}
         run: |
           cat review_prompt.txt | kiro-cli chat --no-interactive --trust-tools=read,grep \
             > review_output_raw.txt 2>&1 || true
+
           python3 nutrisosapp/.github/scripts/process_review_output.py \
             review_output_raw.txt review_output.txt
+
           if [ ! -s review_output.txt ]; then
             echo "✅ APROBADO — No se encontraron hallazgos." > review_output.txt
+          fi
+
+      - name: Validate output consistency
+        if: steps.diff.outputs.skip != 'true'
+        id: validate
+        run: |
+          OUTPUT_FILE="review_output.txt"
+          TAMPERED="false"
+          WARNINGS=""
+
+          if grep -q "APROBADO" "$OUTPUT_FILE" && grep -q "🔴" "$OUTPUT_FILE"; then
+            TAMPERED="true"
+            WARNINGS="${WARNINGS}⚠️ Inconsistencia: veredicto APROBADO con hallazgos 🔴 críticos.\n"
+          fi
+
+          if grep -qiE "(ignore.*instruction|you are now|new role|forget.*previous|system prompt)" "$OUTPUT_FILE"; then
+            TAMPERED="true"
+            WARNINGS="${WARNINGS}⚠️ Posible prompt injection detectado en el output.\n"
+          fi
+
+          echo "tampered=${TAMPERED}" >> $GITHUB_OUTPUT
+
+          if [ "$TAMPERED" = "true" ]; then
+            echo "" >> "$OUTPUT_FILE"
+            echo "---" >> "$OUTPUT_FILE"
+            echo "⚠️ **VALIDACIÓN AUTOMÁTICA:** posible manipulación del output." >> "$OUTPUT_FILE"
+            printf "$WARNINGS" >> "$OUTPUT_FILE"
           fi
 
       - name: Post review comment
@@ -95,15 +131,95 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            // ... (igual que el actual)
+            const fs = require('fs');
+            let review = '';
+            try {
+              review = fs.readFileSync('review_output.txt', 'utf8').trim();
+            } catch (e) {
+              review = '⚠️ No se pudo ejecutar el AI code review.';
+            }
+
+            if (!review || review.length < 5) {
+              review = '✅ **APROBADO** — No se encontraron hallazgos.';
+            }
+
+            const tampered = '${{ steps.validate.outputs.tampered }}';
+            const securityNote = tampered === 'true'
+              ? '\n\n> ⚠️ **Nota:** Se detectó posible inconsistencia en el output. Revisar manualmente.'
+              : '';
+
+            const body = [
+              '## 🤖 Kiro AI Code Review (Advisory)',
+              '',
+              '> ℹ️ Este review es **informativo**. Los reviewers humanos son la autoridad final para aprobar/rechazar.',
+              '',
+              '---',
+              '',
+              review,
+              securityNote,
+              '',
+              '---',
+              '<sub>Revisión automática · Skills: `nutrisosapp/.kiro/skills/code-review/` · Kiro CLI headless</sub>',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(c =>
+              c.body && c.body.includes('🤖 Kiro AI Code Review')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body,
+              });
+            }
 
       - name: Upload audit artifacts
         if: always() && steps.diff.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: kiro-review-audit-pr-${{ github.event.pull_request.number }}
+          name: kiro-review-audit-pr-${{ github.event.pull_request.number }}-${{ github.run_number }}
           path: |
             review_prompt.txt
             review_output_raw.txt
             review_output.txt
+            changed_files.txt
           retention-days: 7
+
+      - name: Skip notice (PR too large)
+        if: steps.diff.outputs.skip == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fileCount = '${{ steps.diff.outputs.file_count }}';
+            const body = [
+              '## 🤖 Kiro AI Code Review (Advisory)',
+              '',
+              `⚠️ **PR omitido** — ${fileCount} archivos exceden el límite configurado.`,
+              'Considera dividir este PR en cambios más pequeños.',
+              '',
+              '---',
+              '<sub>Revisión automática · Kiro CLI headless</sub>',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body,
+            });
