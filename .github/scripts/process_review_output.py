@@ -177,6 +177,11 @@ cleaned = cleaned.strip()
 # ── 6. Corregir títulos con blockquote: "> # Título" → "# Título" ────────────
 cleaned = re.sub(r'^>\s*(#{1,6}\s)', r'\1', cleaned, flags=re.MULTILINE)
 
+# ── 7. Eliminar líneas de separación ━━━━ ────────────────────────────────────
+cleaned = re.sub(r'^━+\s*$', '', cleaned, flags=re.MULTILINE)
+# Colapsar líneas vacías que quedaron tras eliminar separadores
+cleaned = re.sub(r'\n{3,}', '\n\n', cleaned)
+
 with open(output_file, "w", encoding="utf-8") as f:
     f.write(cleaned)
 
