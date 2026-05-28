@@ -209,25 +209,29 @@ const AddFoodForm = () => {
             layout='vertical'
             onFinish={onFinish}
             requiredMark={false}>
-            <Col xs={12}>
-                <Form.Item
-                    hasFeedback
-                    name={'nombre'}
-                    label={<label className={'formItem'}>Nombre</label>}
-                    rules={[Rules.basicSpanish]}>
-                    <Input placeholder='Ingrese el nombre del alimento' />
-                </Form.Item>
-                <Form.Item
-                    name='image'
-                    wrapperCol={{ sm: 24 }}
-                    label={<label className={'formItem'}>Imagen</label>}
-                    tooltip={{
-                        title: 'Seleccione una imagen del alimento',
-                        icon: <InfoCircleOutlined />,
-                    }}>
-                    <UploadImgs onChange={handleUploadImg} />
-                </Form.Item>
-            </Col>
+            <Row >
+                <Col span={12}>
+                    <Form.Item
+                        hasFeedback
+                        name={'nombre'}
+                        label={<label className={'formItem'}>Nombre</label>}
+                        rules={[Rules.basicSpanish]}>
+                        <Input placeholder='Ingrese el nombre del alimento' />
+                    </Form.Item>
+                </Col>
+                <Col span={8} offset={2}>
+                    <Form.Item
+                        name='image'
+                        wrapperCol={{ sm: 24 }}
+                        label={<label className={'formItem'}>Imagen</label>}
+                        tooltip={{
+                            title: 'Seleccione una imagen del alimento',
+                            icon: <InfoCircleOutlined />,
+                        }}>
+                        <UploadImgs onChange={handleUploadImg} />
+                    </Form.Item>
+                </Col>
+            </Row>
             <Card className='cards' title='Íconos'>
                 <Row>
                     <Col span={12}>
@@ -433,8 +437,8 @@ const AddFoodForm = () => {
                 </Select>
             </Form.Item>
             <Card className='cards' title='Calorías macronutrientes'>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'energiamacro'}
                             rules={[Rules.basicSpanish]}
@@ -447,7 +451,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'proteinamacro'}
                             rules={[Rules.basicSpanish]}
@@ -459,10 +463,10 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
+                    {/* </Row>
 
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={[8, 8]}> */}
+                    <Col span={8}>
                         <Form.Item
                             name={'saturadasmacro'}
                             rules={[Rules.basicSpanish]}
@@ -474,7 +478,9 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                </Row>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'monoinsaturadosmacro'}
                             rules={[Rules.basicSpanish]}
@@ -486,9 +492,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'adpoliinsaturadosmacro'}
                             rules={[Rules.basicSpanish]}
@@ -500,7 +504,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'lipidosmacro'}
                             rules={[Rules.basicSpanish]}
@@ -513,8 +517,8 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'colestrerolmacro'}
                             rules={[Rules.basicSpanish]}
@@ -526,8 +530,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'omega3macro'}
                             rules={[Rules.basicSpanish]}
@@ -539,9 +542,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'omega6macro'}
                             rules={[Rules.basicSpanish]}
@@ -553,7 +554,9 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                </Row>
+                <Row gutter={16}>  
+                    <Col span={8}>
                         <Form.Item
                             name={'omega9'}
                             rules={[Rules.basicSpanish]}
@@ -565,9 +568,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'hidratosCarbonomacro'}
                             rules={[Rules.basicSpanish]}
@@ -579,8 +580,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'fibramacro'}
                             rules={[Rules.basicSpanish]}
@@ -593,8 +593,8 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'fibrasolublemacro'}
                             rules={[Rules.basicSpanish]}
@@ -607,7 +607,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'fibrainsolublemacro'}
                             rules={[Rules.basicSpanish]}
@@ -619,9 +619,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'azucarmacro'}
                             rules={[Rules.basicSpanish]}
@@ -633,8 +631,9 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-
-                    <Col span={12}>
+                </Row>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'etanolmacro'}
                             rules={[Rules.basicSpanish]}
@@ -649,8 +648,8 @@ const AddFoodForm = () => {
                 </Row>
             </Card>
             <Card className='cards' title='Minerales'>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'calcio'}
                             rules={[Rules.basicSpanish]}
@@ -663,7 +662,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'fosforo1'} //Este es el primer fósforo
                             rules={[Rules.basicSpanish]}
@@ -675,10 +674,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'hierro'}
                             rules={[Rules.basicSpanish]}
@@ -691,7 +687,10 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                </Row>
+
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'hierroNoHem'}
                             rules={[Rules.basicSpanish]}
@@ -703,9 +702,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'hierroTotal'}
                             rules={[Rules.basicSpanish]}
@@ -717,8 +714,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'magnesio'}
                             rules={[Rules.basicSpanish]}
@@ -731,8 +727,8 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                <Col span={8}>
                         <Form.Item
                             name={'sodio'}
                             rules={[Rules.basicSpanish]}
@@ -744,8 +740,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'potasio'}
                             rules={[Rules.basicSpanish]}
@@ -757,9 +752,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'zinc'}
                             rules={[Rules.basicSpanish]}
@@ -771,8 +764,10 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-
-                    <Col span={12}>
+                    
+                </Row>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'selenio'}
                             rules={[Rules.basicSpanish]}
@@ -787,8 +782,8 @@ const AddFoodForm = () => {
                 </Row>
             </Card>
             <Card className='cards' title='Vitaminas'>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'tiamina'}
                             rules={[Rules.basicSpanish]}
@@ -801,7 +796,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'riboflavin'}
                             rules={[Rules.basicSpanish]}
@@ -813,9 +808,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'niacina'}
                             rules={[Rules.basicSpanish]}
@@ -827,8 +820,9 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-
-                    <Col span={12}>
+                </Row>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'acidoPantotenico'}
                             rules={[Rules.basicSpanish]}
@@ -840,9 +834,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'piridoxina'}
                             rules={[Rules.basicSpanish]}
@@ -855,7 +847,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'biotina'}
                             rules={[Rules.basicSpanish]}
@@ -868,8 +860,8 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'cobalmina'}
                             rules={[Rules.basicSpanish]}
@@ -882,7 +874,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'acidoAscorbico'}
                             rules={[Rules.basicSpanish]}
@@ -894,9 +886,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'acidoFolico'}
                             rules={[Rules.basicSpanish]}
@@ -909,7 +899,9 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                </Row>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'vitaminaA'}
                             rules={[Rules.basicSpanish]}
@@ -921,9 +913,7 @@ const AddFoodForm = () => {
                             />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'vitaminaD'}
                             rules={[Rules.basicSpanish]}
@@ -936,7 +926,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'vitaminaK'}
                             rules={[Rules.basicSpanish]}
@@ -949,8 +939,8 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'vitaminaE'}
                             rules={[Rules.basicSpanish]}
@@ -988,7 +978,7 @@ const AddFoodForm = () => {
 
             {/*ASPECTO MEDIOAMBIENTAL*/}
             <Card className='cards' title='Aspecto medioambiental'>
-                <Row gutter={[8, 8]}>
+                <Row gutter={16}>
                     <Col span={8}>
                         <Form.Item
                             name={'factorCoreccion'}
@@ -1145,9 +1135,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese la cantidad de nitrógeno' />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'fosforo2'} //Este fósforo ya existe
                             rules={[Rules.basicSpanish]}
@@ -1155,7 +1143,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese la cantidad de fósforo' />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'puntajeEcologico'}
                             rules={[Rules.basicSpanish]}
@@ -1164,6 +1152,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
                 </Row>
+                
             </Card>
             <Card className='cards' title='Aspecto económico'>
                 <Row gutter={[8, 8]}>
@@ -1214,8 +1203,8 @@ const AddFoodForm = () => {
 
             {/*COMPONENTES BIOACTIVOS*/}
             <Card className='cards' title='Componentes Bioactivos'>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'fitoquimicos'}
                             rules={[Rules.basicSpanish]}
@@ -1224,7 +1213,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'polifenoles'}
                             rules={[Rules.basicSpanish]}
@@ -1232,9 +1221,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese los polifenos' />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'antocianinas'}
                             rules={[Rules.basicSpanish]}
@@ -1242,8 +1229,11 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese las antocianinas ' />
                         </Form.Item>
                     </Col>
+                </Row>
+                <Row gutter={16}>
+                    
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'taninos'}
                             rules={[Rules.basicSpanish]}
@@ -1251,9 +1241,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese los tianinos' />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'isoflavonas'}
                             rules={[Rules.basicSpanish]}
@@ -1262,7 +1250,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'resveraterol'}
                             rules={[Rules.basicSpanish]}
@@ -1271,8 +1259,8 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                <Col span={8}>
                         <Form.Item
                             name={'isotiocinatos'}
                             rules={[Rules.basicSpanish]}
@@ -1281,7 +1269,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'caretenoides'}
                             rules={[Rules.basicSpanish]}
@@ -1289,9 +1277,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese la cantidad de caretenoides' />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'betacarotenos'}
                             rules={[Rules.basicSpanish]}
@@ -1299,8 +1285,9 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese la cantidad de betacarotenos' />
                         </Form.Item>
                     </Col>
-
-                    <Col span={12}>
+                </Row>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'licopeno'}
                             rules={[Rules.basicSpanish]}
@@ -1308,9 +1295,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese la cantidad de licopeno' />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'luteina'}
                             rules={[Rules.basicSpanish]}
@@ -1319,7 +1304,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'alicina'}
                             rules={[Rules.basicSpanish]}
@@ -1328,8 +1313,9 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'cafeina'}
                             rules={[Rules.basicSpanish]}
@@ -1337,7 +1323,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese la cantidad de Cafeína' />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'UFC'}
                             rules={[Rules.basicSpanish]}
@@ -1350,8 +1336,8 @@ const AddFoodForm = () => {
 
             {/*ADITIVOS ALIMENTARIOS*/}
             <Card className='cards' title='Aditivos alimentarios'>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'benzoatoDeSodio'}
                             rules={[Rules.basicSpanish]}
@@ -1360,7 +1346,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'polisorbato'}
                             rules={[Rules.basicSpanish]}
@@ -1368,9 +1354,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese polisorbato' />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'azulBrillanteFCFoE133'}
                             rules={[Rules.basicSpanish]}
@@ -1380,8 +1364,9 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese azulBrillanteFCFoE133 ' />
                         </Form.Item>
                     </Col>
-
-                    <Col span={12}>
+                </Row>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'azurrubinaOE102'}
                             rules={[Rules.basicSpanish]}
@@ -1389,9 +1374,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese azurrubinaOE102' />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'amarilloOcasoFDFoE110'}
                             rules={[Rules.basicSpanish]}
@@ -1402,7 +1385,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'tartrazinaOE102'}
                             rules={[Rules.basicSpanish]}
@@ -1411,8 +1394,8 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'verdeSoE142'}
                             rules={[Rules.basicSpanish]}
@@ -1421,7 +1404,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'negroBrillanteBNoE151'}
                             rules={[Rules.basicSpanish]}
@@ -1431,9 +1414,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese negroBrillanteBNoE151' />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'sucralosa'}
                             rules={[Rules.basicSpanish]}
@@ -1441,8 +1422,9 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese sucralosa' />
                         </Form.Item>
                     </Col>
-
-                    <Col span={12}>
+                </Row>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'estevia'}
                             rules={[Rules.basicSpanish]}
@@ -1450,9 +1432,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese la cantidad de estevia' />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'sacarina'}
                             rules={[Rules.basicSpanish]}
@@ -1461,7 +1441,7 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
 
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'aspartame'}
                             rules={[Rules.basicSpanish]}
@@ -1470,8 +1450,8 @@ const AddFoodForm = () => {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'acesulfameK'}
                             rules={[Rules.basicSpanish]}
@@ -1479,7 +1459,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese la cantidad de acesulfameK' />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'carboxymethylcellulose'}
                             rules={[Rules.basicSpanish]}
@@ -1489,9 +1469,7 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese carboxymethylcellulose' />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row gutter={[8, 8]}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <Form.Item
                             name={'dioxidoDeTitanio'}
                             rules={[Rules.basicSpanish]}
@@ -1499,7 +1477,9 @@ const AddFoodForm = () => {
                             <Input placeholder='Ingrese la cantidad de dioxidoDeTitanio' />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                </Row>
+                <Row gutter={16}>
+                    <Col span={8}>
                         <Form.Item
                             name={'monolauratoDeGlicerol'}
                             rules={[Rules.basicSpanish]}
@@ -1516,7 +1496,7 @@ const AddFoodForm = () => {
                     <Col span={24}>
                         <Form.Item
                             name={'marca'}
-                            label={<label className={'formItem'}>Marca</label>}>
+                            >
                             <Input placeholder='Ingrese la marca' />
                         </Form.Item>
                     </Col>

@@ -22,7 +22,10 @@ const Clinic = ({ id }) => {
     const [form] = Form.useForm();
     const [clinic, setClinic] = useState(initialState);
     const [tooltip, setTooltip] = useState('');
-
+    const [tooltipSistolica, setTooltipSistolica]=useState('');
+    const [tooltipDiastolica, setTooltipDiastolica]=useState('');
+    const [tooltipAcantosisValor, setTooltipAcantosisValor]=useState('');
+    const [tooltipAcantosisNumero, setTooltipAcantosisNumero]=useState('');
     const fetchData = async () => {
         try {
             const { data } = await apiURL.get(`clinicos/individual?usuario=${id}`);
@@ -37,7 +40,10 @@ const Clinic = ({ id }) => {
                 const lastSistolica = presionArterialSistolica.slice(-1)[0];
                 const lastNigricans = acantosisNigricans.slice(-1)[0];
 
-                setTooltip(presionArterialSistolica.slice(-2)[0].valor);
+                setTooltipSistolica(presionArterialSistolica.slice(-2)[0].valor);
+                setTooltipDiastolica(presionArterialDiastolica.slice(-2)[0].valor);
+                setTooltipAcantosisNumero(acantosisNigricans.slice(-2)[0].numero);
+                setTooltipAcantosisValor(acantosisNigricans.slice(-2)[0].valor);
 
                 setClinic({
                     sistolica: lastSistolica.valor,
@@ -88,7 +94,7 @@ const Clinic = ({ id }) => {
                     onFinish={onFinish}>
                     <div className='basicInfo-ContainerSocioData'>
                         <div className='entradasSocioData'>
-                            <Tooltip title={tooltip} placement='right'>
+                            <Tooltip title={tooltipSistolica} placement='right'>
                                 <Form.Item
                                     label='Presión arterial sistólica'
                                     name='presionArterialS'>
@@ -108,6 +114,7 @@ const Clinic = ({ id }) => {
                             </Tooltip>
                         </div>
                         <div className='entradasSocioData'>
+                        <Tooltip title={tooltipDiastolica} placement='right'>
                             <Form.Item
                                 label='Presión arterial diastólica'
                                 name='presionArterialD'>
@@ -124,10 +131,12 @@ const Clinic = ({ id }) => {
                                     }
                                 />
                             </Form.Item>
+                            </Tooltip>
                         </div>
                     </div>
                     <div className='basicInfo-ContainerSocioData'>
                         <div className='entradasSocioData'>
+                        <Tooltip title={tooltipAcantosisValor} placement='right'>
                             <Form.Item
                                 label='Acantosis nigricans valor'
                                 name='nigricansValor'>
@@ -145,8 +154,10 @@ const Clinic = ({ id }) => {
                                     }
                                 />
                             </Form.Item>
+                            </Tooltip>
                         </div>
                         <div className='entradasSocioData'>
+                        <Tooltip title={tooltipAcantosisNumero} placement='right'>
                             <Form.Item label='Acantosis nigricans número' name='nigricansNum'>
                                 <Input
                                     placeholder={clinic.nigricans.numero ?? 0}
@@ -162,6 +173,7 @@ const Clinic = ({ id }) => {
                                     }
                                 />
                             </Form.Item>
+                            </Tooltip>
                         </div>
                     </div>
                     <div className='basicInfo-Save'>
