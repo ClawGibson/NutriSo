@@ -119,14 +119,40 @@ jobs:
           TAMPERED="false"
           WARNINGS=""
 
+          # A1/A2 — Inconsistencia estructural: veredicto APROBADO con hallazgos críticos
           if grep -q "APROBADO" "$OUTPUT_FILE" && grep -q "🔴" "$OUTPUT_FILE"; then
             TAMPERED="true"
             WARNINGS="${WARNINGS}⚠️ Inconsistencia: veredicto APROBADO con hallazgos 🔴 críticos.\n"
           fi
 
+          # A1 — Frases clásicas de prompt injection en el output (indica que el modelo las reprodujo)
           if grep -qiE "(ignore.*instruction|you are now|new role|forget.*previous|system prompt)" "$OUTPUT_FILE"; then
             TAMPERED="true"
-            WARNINGS="${WARNINGS}⚠️ Posible prompt injection detectado en el output.\n"
+            WARNINGS="${WARNINGS}⚠️ Posible prompt injection detectado en el output (frases de override).\n"
+          fi
+
+          # A1/A4 — Variantes en español, portugués o con errores tipográficos intencionales
+          if grep -qiE "(ignora.*instrucciones|olvida.*instrucciones|eres ahora|nuevo rol|modo mantenimiento|bypass.*review)" "$OUTPUT_FILE"; then
+            TAMPERED="true"
+            WARNINGS="${WARNINGS}⚠️ Posible prompt injection en español detectado en el output.\n"
+          fi
+
+          # A2 — Indicador de que el modelo decodificó Base64 en el output
+          if grep -qiE "(decodificado|decoded|base64.*decode|aWdub3Jl)" "$OUTPUT_FILE"; then
+            TAMPERED="true"
+            WARNINGS="${WARNINGS}⚠️ Posible encoding obfuscation (Base64) detectado en el output.\n"
+          fi
+
+          # C1 — El modelo intentó leer /proc o archivos del sistema del runner
+          if grep -qE "(/proc/|/etc/passwd|/home/runner|environ)" "$OUTPUT_FILE"; then
+            TAMPERED="true"
+            WARNINGS="${WARNINGS}⚠️ El output referencia rutas del sistema del runner — posible exfiltración (C1).\n"
+          fi
+
+          # E1 — Veredicto APROBADO sin sección de hallazgos (aprobación silenciosa)
+          if grep -q "APROBADO" "$OUTPUT_FILE" && ! grep -qE "(🔴|🟡|Crítico|Importante)" "$OUTPUT_FILE"; then
+            # Esto es válido en PRs limpios, solo registrar como nota informativa
+            echo "ℹ️ Veredicto APROBADO sin hallazgos — normal en PRs limpios."
           fi
 
           echo "tampered=${TAMPERED}" >> $GITHUB_OUTPUT
@@ -136,6 +162,44 @@ jobs:
             echo "---" >> "$OUTPUT_FILE"
             echo "⚠️ **VALIDACIÓN AUTOMÁTICA:** posible manipulación del output." >> "$OUTPUT_FILE"
             printf "$WARNINGS" >> "$OUTPUT_FILE"
+          fi
+
+      - name: Redact secrets from prompt artifact
+        if: always() && steps.diff.outputs.skip != 'true'
+        run: |
+          # Detectar patrones de secrets comunes en el prompt antes de subirlo como artifact.
+          # Si se detecta algo, reemplaza el bloque del diff con un aviso — el resto del prompt
+          # (system instructions) se preserva intacto para poder auditar el contexto.
+          # Patrones: API keys, tokens Bearer/PAT, passwords, secrets en variables de entorno.
+          PATTERN='(?i)(api[_-]?key|secret[_-]?key|password|passwd|token|bearer|ghp_|sk-|AKIA)[^\n]{8,}'
+
+          if grep -qP "$PATTERN" review_prompt.txt 2>/dev/null; then
+            echo "⚠️ Posible secret detectado en review_prompt.txt — redactando diff del artifact"
+            python3 - <<'PYEOF'
+          import re, sys
+
+          PATTERN = re.compile(
+              r'(?i)(api[_\-]?key|secret[_\-]?key|password|passwd|token|bearer|ghp_|sk-|AKIA)[^\n]{8,}'
+          )
+
+          with open('review_prompt.txt', 'r', encoding='utf-8', errors='replace') as f:
+              content = f.read()
+
+          start = content.find('<UNTRUSTED_CODE_DIFF>')
+          end   = content.find('</UNTRUSTED_CODE_DIFF>')
+
+          if start != -1 and end != -1:
+              diff_block = content[start:end + len('</UNTRUSTED_CODE_DIFF>')]
+              matches = PATTERN.findall(diff_block)
+              if matches:
+                  redacted_diff = PATTERN.sub('[REDACTED_POSSIBLE_SECRET]', diff_block)
+                  safe_content = content[:start] + redacted_diff + content[end + len('</UNTRUSTED_CODE_DIFF>'):]
+                  with open('review_prompt.txt', 'w', encoding='utf-8') as f:
+                      f.write(safe_content)
+                  print(f"Redactados {len(matches)} posibles secrets del diff.")
+          PYEOF
+          else
+            echo "✅ No se detectaron secrets en review_prompt.txt"
           fi
 
       - name: Generate audit manifest
@@ -159,9 +223,40 @@ jobs:
           FILE_COUNT=$(wc -l < changed_files.txt | tr -d ' ')
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
+          # Detectar si el diff fue truncado por el límite de tamaño
+          MAX_SIZE="${{ vars.KIRO_REVIEW_DIFF_MAX_SIZE }}"
+          MAX_SIZE="${MAX_SIZE:-100KB}"
+          UNIT=$(echo "$MAX_SIZE" | sed 's/[0-9]//g')
+          VALUE=$(echo "$MAX_SIZE" | sed 's/[^0-9]//g')
+          case "$UNIT" in
+            KB|kb) MAX_BYTES=$((VALUE * 1024)) ;;
+            MB|mb) MAX_BYTES=$((VALUE * 1048576)) ;;
+            *)     MAX_BYTES=$((VALUE * 1024)) ;;
+          esac
+          DIFF_TRUNCATED="false"
+          if [ "$DIFF_BYTES" -ge "$MAX_BYTES" ]; then
+            DIFF_TRUNCATED="true"
+          fi
+
+          # Detectar si el raw output tiene señales de tool calls del modelo (read/grep)
+          TOOL_CALLS_DETECTED="false"
+          if grep -qiE "(Reading file:|Getting symbols from:|Successfully read)" review_output_raw.txt 2>/dev/null; then
+            TOOL_CALLS_DETECTED="true"
+          fi
+
+          # Detectar si el raw output contiene advertencias de auth/MCP que afectan la sesión
+          CLI_WARNINGS=""
+          if grep -q "Failed to retrieve MCP settings" review_output_raw.txt 2>/dev/null; then
+            CLI_WARNINGS="${CLI_WARNINGS}mcp_disabled,"
+          fi
+          if grep -q "kiro-cli login" review_output_raw.txt 2>/dev/null; then
+            CLI_WARNINGS="${CLI_WARNINGS}auth_warning,"
+          fi
+          CLI_WARNINGS="${CLI_WARNINGS%,}"
+
           cat > audit_manifest.json <<EOF
           {
-            "schema_version": "1.0",
+            "schema_version": "1.1",
             "generated_at": "${TIMESTAMP}",
             "pipeline": {
               "run_id": "${RUN_ID}",
@@ -180,6 +275,7 @@ jobs:
             "diff_stats": {
               "file_count": ${FILE_COUNT},
               "diff_bytes": ${DIFF_BYTES},
+              "diff_truncated": ${DIFF_TRUNCATED},
               "diff_sha256": "${DIFF_SHA}"
             },
             "artifacts": {
@@ -189,7 +285,9 @@ jobs:
             "security": {
               "output_tampered_flag": "${TAMPERED}",
               "fork_pr": false,
-              "trust_tools": "read,grep"
+              "trust_tools": "read,grep",
+              "tool_calls_detected": ${TOOL_CALLS_DETECTED},
+              "cli_warnings": "${CLI_WARNINGS}"
             }
           }
           EOF
