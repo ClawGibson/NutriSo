@@ -40,16 +40,25 @@ jobs:
 
       - name: Get PR diff
         id: diff
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-          git diff origin/${{ github.event.pull_request.base.ref }}...HEAD --name-only > changed_files.txt
-          git diff origin/${{ github.event.pull_request.base.ref }}...HEAD > full_diff.patch
+          git fetch origin "$BASE_REF"
+          git diff "origin/${BASE_REF}...HEAD" --name-only > changed_files.txt
+          git diff "origin/${BASE_REF}...HEAD" > full_diff.patch
 
           FILE_COUNT=$(wc -l < changed_files.txt | tr -d ' ')
           echo "file_count=${FILE_COUNT}" >> $GITHUB_OUTPUT
+          echo "head_sha=${HEAD_SHA}" >> $GITHUB_OUTPUT
 
           MAX_FILES="${{ vars.KIRO_REVIEW_MAX_FILES }}"
           MAX_FILES="${MAX_FILES:-100}"
+          # Validar que MAX_FILES sea numérico para evitar expression injection
+          if ! [[ "$MAX_FILES" =~ ^[0-9]+$ ]]; then
+            echo "⚠️ KIRO_REVIEW_MAX_FILES inválido ('${MAX_FILES}'), usando default 100"
+            MAX_FILES=100
+          fi
 
           if [ "$FILE_COUNT" -gt "$MAX_FILES" ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
@@ -60,6 +69,10 @@ jobs:
 
       - name: Build review prompt
         if: steps.diff.outputs.skip != 'true'
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
           MAX_SIZE="${{ vars.KIRO_REVIEW_DIFF_MAX_SIZE }}"
           MAX_SIZE="${MAX_SIZE:-100KB}"
@@ -74,9 +87,9 @@ jobs:
 
           python3 nutrisosapp/.github/scripts/build_review_prompt.py \
             full_diff.patch "$BYTES" "nutrisosapp/.kiro/skills/code-review" \
-            "${{ github.head_ref }}" \
-            "${{ github.base_ref }}" \
-            "${{ github.event.pull_request.user.login }}"
+            "$HEAD_REF" \
+            "$BASE_REF" \
+            "$AUTHOR"
 
       - name: Install Kiro CLI
         if: steps.diff.outputs.skip != 'true'
@@ -125,6 +138,65 @@ jobs:
             printf "$WARNINGS" >> "$OUTPUT_FILE"
           fi
 
+      - name: Generate audit manifest
+        if: always() && steps.diff.outputs.skip != 'true'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          HEAD_SHA: ${{ steps.diff.outputs.head_sha }}
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_NUMBER: ${{ github.run_number }}
+          TAMPERED: ${{ steps.validate.outputs.tampered }}
+          REPO: ${{ github.repository }}
+        run: |
+          REVIEW_SHA=$(sha256sum review_output.txt | cut -d' ' -f1)
+          PROMPT_SHA=$(sha256sum review_prompt.txt | cut -d' ' -f1)
+          DIFF_SHA=$(sha256sum full_diff.patch | cut -d' ' -f1)
+          DIFF_BYTES=$(wc -c < full_diff.patch | tr -d ' ')
+          FILE_COUNT=$(wc -l < changed_files.txt | tr -d ' ')
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          cat > audit_manifest.json <<EOF
+          {
+            "schema_version": "1.0",
+            "generated_at": "${TIMESTAMP}",
+            "pipeline": {
+              "run_id": "${RUN_ID}",
+              "run_number": "${RUN_NUMBER}",
+              "workflow": "kiro-code-review.yml",
+              "repository": "${REPO}"
+            },
+            "pull_request": {
+              "number": "${PR_NUMBER}",
+              "title": $(echo "${PR_TITLE}" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read().strip()))"),
+              "author": "${AUTHOR}",
+              "head_sha": "${HEAD_SHA}",
+              "head_ref": "${HEAD_REF}",
+              "base_ref": "${BASE_REF}"
+            },
+            "diff_stats": {
+              "file_count": ${FILE_COUNT},
+              "diff_bytes": ${DIFF_BYTES},
+              "diff_sha256": "${DIFF_SHA}"
+            },
+            "artifacts": {
+              "review_prompt_sha256": "${PROMPT_SHA}",
+              "review_output_sha256": "${REVIEW_SHA}"
+            },
+            "security": {
+              "output_tampered_flag": "${TAMPERED}",
+              "fork_pr": false,
+              "trust_tools": "read,grep"
+            }
+          }
+          EOF
+
+          echo "Manifest generado:"
+          cat audit_manifest.json
+
       - name: Post review comment
         if: always() && steps.diff.outputs.skip != 'true'
         uses: actions/github-script@v7
@@ -144,6 +216,8 @@ jobs:
             }
 
             const tampered = '${{ steps.validate.outputs.tampered }}';
+            const headSha = '${{ steps.diff.outputs.head_sha }}';
+            const shortSha = headSha ? headSha.substring(0, 7) : 'unknown';
             const securityNote = tampered === 'true'
               ? '\n\n> ⚠️ **Nota:** Se detectó posible inconsistencia en el output. Revisar manualmente.'
               : '';
@@ -159,7 +233,7 @@ jobs:
               securityNote,
               '',
               '---',
-              '<sub>Revisión automática · Skills: `nutrisosapp/.kiro/skills/code-review/` · Kiro CLI headless</sub>',
+              `<sub>Revisión automática · Commit revisado: \`${shortSha}\` · Skills: \`nutrisosapp/.kiro/skills/code-review/\` · Kiro CLI headless</sub>`,
             ].join('\n');
 
             const { data: comments } = await github.rest.issues.listComments({
@@ -194,11 +268,12 @@ jobs:
         with:
           name: kiro-review-audit-pr-${{ github.event.pull_request.number }}-${{ github.run_number }}
           path: |
+            audit_manifest.json
             review_prompt.txt
             review_output_raw.txt
             review_output.txt
             changed_files.txt
-          retention-days: 7
+          retention-days: 30
 
       - name: Skip notice (PR too large)
         if: steps.diff.outputs.skip == 'true'
