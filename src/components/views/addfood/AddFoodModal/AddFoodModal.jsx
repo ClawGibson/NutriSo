@@ -25,7 +25,7 @@ const AddFoodModal = () => {
                 visible={isModalVisible}
                 onCancel={handleCancel}
                 footer={[]}
-                width={'50%'}>
+                width={'60%'}>
                 <AddFoodForm />
             </Modal>
         </>
