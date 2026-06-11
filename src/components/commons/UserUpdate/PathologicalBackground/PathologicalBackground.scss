@@ -1,0 +1,67 @@
+.containerPatologicos {
+    width: 60%;
+    //background-color: white;
+    margin-left: 20%;
+    margin-top: 5%;
+    height: 25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    border: solid 2px black;
+    /* From https://css.glass */
+    background: rgba(81, 118, 139, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(52, 202, 222, 0.3);
+}
+
+.basicInfo-TitleExpoSol {
+    width: 90%;
+    //background-color: RED;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 15%;
+    font-weight: 800;
+    font-size: x-large;
+}
+
+.basicInfo-Name-ContainerES {
+    width: 100%;
+    //background-color: red;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 50%;
+}
+
+.basicInfo-Name-ContainerES2 {
+    width: 100%;
+    //background-color: rgb(255, 0, 212);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 600;
+    font-size: larger;
+    height: 100%;
+}
+
+.id-expoSol {
+    margin-left: 1px;
+    font-weight: 600;
+}
+
+.lb-expoSolSelect {
+    //background-color: white;
+    border-radius: 5px;
+    border: solid 1px black;
+    width: 90%;
+    height: auto;
+    margin-top: 0px;
+    text-align: center;
+}
